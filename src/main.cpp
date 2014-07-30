@@ -341,5 +341,9 @@ int main(int argc, char* argv[])
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
  
+    cout << endl;
+    cout << "If you made it here, the blit test passed!" << endl;
+    cout << endl;
+
     return 0;
 }

@@ -330,10 +330,10 @@ int main(int argc, char* argv[])
 
     // Set the draw buffer to be the default buffer:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    //glDrawBuffer(GL_BACK); // is this necessary?
+    glDrawBuffer(GL_BACK); // is this necessary?
     // Set the read buffer to be the custom buffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-    //glReadBuffer(GL_COLOR_ATTACHMENT0); // is this necessary?
+    glReadBuffer(GL_COLOR_ATTACHMENT0); // is this necessary?
     
     // Check that the binds worked
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to bind input/output buffers");

@@ -211,7 +211,7 @@ void printGLFramebufferBufferInfo(GLenum target, GLenum attachment)
     {
         cout << "Details about this GL_FRAMEBUFFER_DEFAULT" << endl;
 		GLint name;
-		glBindRenderbuffer(GL_RENDERBUFFER, attachment);
+		//glBindRenderbuffer(GL_RENDERBUFFER, attachment);
 		printRenderbufferInformation();
 	}
     else if(fbo_attachment_object_type == GL_RENDERBUFFER)
@@ -273,11 +273,11 @@ int main(int argc, char* argv[])
 
     // Select an OpenGL 3.3 core profile context
     QGLFormat gl_core_format;
-    gl_core_format.setVersion(3, 3);
+    gl_core_format.setVersion(3, 2);
     gl_core_format.setProfile(QGLFormat::CoreProfile);
     gl_core_format.setAlpha(true);
     gl_core_format.setDoubleBuffer(true);
-    gl_core_format.setSampleBuffers(false);
+    gl_core_format.setSampleBuffers(true);
     gl_core_format.setSamples(4);
     QGLFormat::setDefaultFormat(gl_core_format);
 
@@ -296,12 +296,19 @@ int main(int argc, char* argv[])
     unsigned int height = 128;
     unsigned int depth = 1;
     unsigned int samples = 4;
-    GLuint FBO; 
-    GLuint FBO_texture;
-    GLuint FBO_depth;
+//    GLuint FBO;
+//    GLuint FBO_texture;
+//    GLuint FBO_depth;
 
     // do some off-screen rendering, the widget has never been made visible
     gl.makeCurrent (); // ABSOLUTELY CRUCIAL!
+
+    // Verify that multisampling is enabled
+    if(glIsEnabled(GL_MULTISAMPLE))
+        cout << "Multisample AA is enabled" << endl;
+    else
+        cout << "Multisample AA is DISABLED" << endl;
+ 
     
     QString versionString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
     qDebug() << endl << "OpenGL information:" << endl;
@@ -312,38 +319,60 @@ int main(int argc, char* argv[])
     gl.resize(width, height);
     qDebug() << endl << "Widget information:";
     qDebug() << " Size: " << gl.size() << endl;
+    gl.show();
 
-    // create the off-screen storage buffer
-    GLuint FBO_storage;
-    GLuint FBO_storage_texture;
-    CreateGLMultisampleRenderBuffer(width, height, samples, FBO, FBO_texture, FBO_depth);
     
-    // Print out some information on the two framebuffers.
-    // First the default buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    qDebug() << endl << "GL_DRAW_FRAMEBUFFER details:" << endl;
-    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_BACK_LEFT);
-    // now the custom FBO we created above.
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    qDebug() << endl << "GL_READ_FRAMEBUFFER details:" << endl;
-    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
+    // Create an RGBA32F MAA buffer
+    QGLFramebufferObjectFormat fbo_format = QGLFramebufferObjectFormat();
+    fbo_format.setInternalTextureFormat(GL_RGBA32F);
+    fbo_format.setTextureTarget(GL_TEXTURE_2D);
 
-    // Set the draw buffer to be the default buffer:
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glDrawBuffer(GL_BACK); // is this necessary?
-    // Set the read buffer to be the custom buffer
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-    glReadBuffer(GL_COLOR_ATTACHMENT0); // is this necessary?
-    
-    // Check that the binds worked
-    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to bind input/output buffers");
-    // execute the blit
-    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    QGLFramebufferObject FBO(gl.size(), fbo_format);
+    QRect region(0, 0, width, height);
+    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to create buffer");
+
+    QGLFramebufferObject::blitFramebuffer (NULL, region, &FBO, region);
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
- 
-    cout << endl;
-    cout << "If you made it here, the blit test passed!" << endl;
-    cout << endl;
+
+    cout << "Woot." << endl;
+
+
+    // now try to blit
+
+
+//    // create the off-screen storage buffer
+//    GLuint FBO_storage;
+//    GLuint FBO_storage_texture;
+//    CreateGLMultisampleRenderBuffer(width, height, samples, FBO, FBO_texture, FBO_depth);
+//
+//    // Print out some information on the two framebuffers.
+//    // First the default buffer
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    qDebug() << endl << "GL_DRAW_FRAMEBUFFER details:" << endl;
+//    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_BACK_LEFT);
+//    // now the custom FBO we created above.
+//    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+//    qDebug() << endl << "GL_READ_FRAMEBUFFER details:" << endl;
+//    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
+//
+//    // bind back to the default buffer
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    // Set the read buffer to be the custom buffer
+//    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+//    glReadBuffer(GL_COLOR_ATTACHMENT0);
+//    // Set the draw buffer to be the default buffer:
+//    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//    glDrawBuffer(GL_BACK);
+//    // Check that the binds worked
+//    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to bind input/output buffers");
+//
+//    // execute the blit
+//    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+//    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
+//
+//    cout << endl;
+//    cout << "If you made it here, the blit test passed!" << endl;
+//    cout << endl;
 
     return 0;
 }

@@ -300,6 +300,9 @@ int main(int argc, char* argv[])
 //    GLuint FBO_texture;
 //    GLuint FBO_depth;
 
+    const QGLContext * context = gl.context();
+    qDebug() << "GL Context is valid: " << context->isValid();
+
     // do some off-screen rendering, the widget has never been made visible
     gl.makeCurrent (); // ABSOLUTELY CRUCIAL!
 
@@ -321,17 +324,21 @@ int main(int argc, char* argv[])
     qDebug() << " Size: " << gl.size() << endl;
     gl.show();
 
+    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Error up here");
     
     // Create an RGBA32F MAA buffer
     QGLFramebufferObjectFormat fbo_format = QGLFramebufferObjectFormat();
-    fbo_format.setInternalTextureFormat(GL_RGBA32F);
-    fbo_format.setTextureTarget(GL_TEXTURE_2D);
+//    fbo_format.setInternalTextureFormat(GL_RGBA32F);
+//    fbo_format.setTextureTarget(GL_TEXTURE_2D);
 
-    QGLFramebufferObject FBO(gl.size(), fbo_format);
-    QRect region(0, 0, width, height);
+    QGLFramebufferObject * FBO = new QGLFramebufferObject(gl.size(), fbo_format);
+    qDebug() << "Is buffer valid: " << FBO->isValid();
+    qDebug() << "Is bound: " << FBO->isBound();
+
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to create buffer");
 
-    QGLFramebufferObject::blitFramebuffer (NULL, region, &FBO, region);
+    QRect region(0, 0, width, height);
+    QGLFramebufferObject::blitFramebuffer (NULL, region, FBO, region);
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
 
     cout << "Woot." << endl;

@@ -21,7 +21,48 @@ make
 
 ## Sample Results
 
-### Intel Core i7-4770k (Intel HD Graphics 4000) fails
+### AMD Radeon R9 280x on Ubuntu Linux 14.04.1 (passes)
+
+```
+$ ./blit-test 
+GL Context is valid:  true 
+Multisample AA is enabled
+
+OpenGL information: 
+
+ Driver Version String: "3.2.12874 Core Profile Context 14.10.1006.1001" 
+ Current Context: QGLFormat(options QFlags(0x1|0x2|0x4|0x8|0x20|0x80|0x200|0x400) , plane  0 , depthBufferSize  24 , accumBufferSize  -1 , stencilBufferSize  8 , redBufferSize  8 , greenBufferSize  8 , blueBufferSize  8 , alphaBufferSize  8 , samples  4 , swapInterval  0 , majorVersion  3 , minorVersion  2 , profile  1 )  
+
+Widget information: 
+ Size:  QSize(128, 128) 
+
+Is buffer valid:  true 
+Is bound:  false 
+BLIT successful.
+```
+
+### Macbook Pro with Intel Integrated Graphics
+
+```
+$ ./blit-test 
+
+GL Context is valid:  true 
+Multisample AA is enabled
+
+OpenGL information: 
+
+ Driver Version String: "2.1 INTEL-8.28.30" 
+ Current Context: QGLFormat(options QFlags(0x1|0x2|0x4|0x8|0x20|0x80|0x200|0x400) , plane  0 , depthBufferSize  24 , accumBufferSize  -1 , stencilBufferSize  8 , redBufferSize  -1 , greenBufferSize  -1 , blueBufferSize  -1 , alphaBufferSize  8 , samples  4 , swapInterval  1 , majorVersion  1 , minorVersion  0 , profile  0 )  
+
+Widget information: 
+ Size:  QSize(128, 128) 
+
+Is buffer valid:  true 
+Is bound:  false 
+BLIT successful.
+```
+
+### Intel Core i7-4770k on Ubuntu Linux 14.04.1 (Intel HD Graphics 4000 using Mesa 10.1.3) (fails)
 
 Confirm that the driver is loaded and direct rendering is enabled:
 

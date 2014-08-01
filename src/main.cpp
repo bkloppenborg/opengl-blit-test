@@ -271,6 +271,11 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
+    unsigned int width = 128;
+    unsigned int height = 128;
+    unsigned int depth = 1;
+    unsigned int samples = 4;
+
     // Select an OpenGL 3.3 core profile context
     QGLFormat gl_core_format;
     gl_core_format.setVersion(3, 2);
@@ -278,7 +283,7 @@ int main(int argc, char* argv[])
     gl_core_format.setAlpha(true);
     gl_core_format.setDoubleBuffer(true);
     gl_core_format.setSampleBuffers(true);
-    gl_core_format.setSamples(4);
+    gl_core_format.setSamples(samples);
     QGLFormat::setDefaultFormat(gl_core_format);
 
     QGLWidget gl;
@@ -291,14 +296,6 @@ int main(int argc, char* argv[])
         std::cout << "ERROR: No GL context!" << std::endl;
         return -1;
     }
-
-    unsigned int width = 128;
-    unsigned int height = 128;
-    unsigned int depth = 1;
-    unsigned int samples = 4;
-//    GLuint FBO;
-//    GLuint FBO_texture;
-//    GLuint FBO_depth;
 
     const QGLContext * context = gl.context();
     qDebug() << "GL Context is valid: " << context->isValid();
@@ -328,8 +325,8 @@ int main(int argc, char* argv[])
     
     // Create an RGBA32F MAA buffer
     QGLFramebufferObjectFormat fbo_format = QGLFramebufferObjectFormat();
-//    fbo_format.setInternalTextureFormat(GL_RGBA32F);
-//    fbo_format.setTextureTarget(GL_TEXTURE_2D);
+    fbo_format.setInternalTextureFormat(GL_RGBA32F);
+    fbo_format.setTextureTarget(GL_TEXTURE_2D);
 
     QGLFramebufferObject * FBO = new QGLFramebufferObject(gl.size(), fbo_format);
     qDebug() << "Is buffer valid: " << FBO->isValid();
@@ -341,45 +338,7 @@ int main(int argc, char* argv[])
     QGLFramebufferObject::blitFramebuffer (NULL, region, FBO, region);
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
 
-    cout << "Woot." << endl;
-
-
-    // now try to blit
-
-
-//    // create the off-screen storage buffer
-//    GLuint FBO_storage;
-//    GLuint FBO_storage_texture;
-//    CreateGLMultisampleRenderBuffer(width, height, samples, FBO, FBO_texture, FBO_depth);
-//
-//    // Print out some information on the two framebuffers.
-//    // First the default buffer
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    qDebug() << endl << "GL_DRAW_FRAMEBUFFER details:" << endl;
-//    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_BACK_LEFT);
-//    // now the custom FBO we created above.
-//    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-//    qDebug() << endl << "GL_READ_FRAMEBUFFER details:" << endl;
-//    printGLFramebufferBufferInfo(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
-//
-//    // bind back to the default buffer
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    // Set the read buffer to be the custom buffer
-//    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-//    glReadBuffer(GL_COLOR_ATTACHMENT0);
-//    // Set the draw buffer to be the default buffer:
-//    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-//    glDrawBuffer(GL_BACK);
-//    // Check that the binds worked
-//    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to bind input/output buffers");
-//
-//    // execute the blit
-//    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-//    CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
-//
-//    cout << endl;
-//    cout << "If you made it here, the blit test passed!" << endl;
-//    cout << endl;
+    cout << "BLIT successful." << endl;
 
     return 0;
 }

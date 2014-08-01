@@ -69,6 +69,9 @@ $ glxinfo | grep texture_float
 
 ```
 
+Test program fails when a new Framebuffer is created. This happens regardless of the requested
+format (e.g. `GL_RGBA`, `GL_RGBA8`, `GL_RGBA32f` or even with the default constructor)
+
 ```
 $ ./blit-test 
 GL Context is valid:  true 

@@ -323,19 +323,24 @@ int main(int argc, char* argv[])
 
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Error up here");
     
-    // Create an RGBA32F MAA buffer
     QGLFramebufferObjectFormat fbo_format = QGLFramebufferObjectFormat();
     fbo_format.setInternalTextureFormat(GL_RGBA32F);
-    fbo_format.setTextureTarget(GL_TEXTURE_2D);
+    QGLFramebufferObject * FBO_MAA = new QGLFramebufferObject(gl.size(), fbo_format);
+    qDebug() << "MAA buffer valid: " << FBO_MAA->isValid();
 
-    QGLFramebufferObject * FBO = new QGLFramebufferObject(gl.size(), fbo_format);
-    qDebug() << "Is buffer valid: " << FBO->isValid();
-    qDebug() << "Is bound: " << FBO->isBound();
+    // Create an GL_R32F no-multisampling 2D texture buffer.
+    fbo_format = QGLFramebufferObjectFormat();
+    fbo_format.setInternalTextureFormat(GL_R32F);
+    fbo_format.setTextureTarget(GL_TEXTURE_2D);
+    fbo_format.setSamples(0);
+
+    QGLFramebufferObject * FBO_NO_MAA = new QGLFramebufferObject(gl.size(), fbo_format);
+    qDebug() << "NO MAA buffer valid: " << FBO_NO_MAA->isValid();
 
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to create buffer");
 
     QRect region(0, 0, width, height);
-    QGLFramebufferObject::blitFramebuffer (NULL, region, FBO, region);
+    QGLFramebufferObject::blitFramebuffer (FBO_MAA, region, FBO_MAA, region);
     CHECK_OPENGL_STATUS_ERROR(glGetError(), "Failed to blit buffers");
 
     cout << "BLIT successful." << endl;
